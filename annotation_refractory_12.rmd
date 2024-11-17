@@ -1,0 +1,110 @@
+---
+title: "Annotation refractory 12"
+author: "Ladislav Buček"
+date: "13/11/2024"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Libraries
+```{r library}
+options(java.parameters = "-Xmx30000m")
+set.seed(100)
+required_Packages_Install <- c("dplyr", "patchwork", "Seurat","ggplot2","DT")
+for(Package in required_Packages_Install){
+  if(!require(Package,character.only = TRUE)) { 
+    install.packages(Package, dependencies=TRUE)
+  }
+  library(Package,character.only = TRUE)
+}
+```
+## Loading data
+I've renamed features.tsv to genes.tsv for Read10X() to work.
+```{r data loading}
+data_obj <- readRDS("/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/processed/data_obj_processed.rds")
+data_obj_markers <- readRDS("/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/processed/data_obj_markers.rds")
+datatable(data_obj_markers %>% group_by(cluster) %>% top_n(n = 30, wt = avg_log2FC))
+```
+```{r canonical markers}
+features_test <- c("tp63.L","tp63.S",            #basal epidermis
+                    "fgfbp2.L","nptx1.L",        #epidermis
+                    "epor.L","hba1.S",           #erythrocytes
+                    "itln1.L","anxa9.L",         #goblet cells
+                    "atp6v0d2.L","foxi1.L",      #ionocytes
+                    "iqcd.L","tekt3.L",          #MCCs
+                    "sox10.L","slc45a2.L",       #Melanocytes
+                    "eno3.L","des.1.L",          #muscle cells
+                    "sncb.L","elavl4.L",         #neuronal cells
+                    "plod2.L","col9a1-b",        #notochord
+                    "fgf10.L","lef1.S",          #ROCs
+                    "pax9.L","zic1.L",           #somites and other
+                    "foxa1.L","kcna4.S"          #SSCs
+                   )
+```
+```{r dotplot, echo=FALSE, fig.height=10, fig.width = 16.2}
+DotPlot(data_obj, features = features_test) + theme(axis.text.x=element_text(angle=90, hjust = 1, vjust = 0.5))
+```
+# Cluster annotation
+Cluster that I was unable to annotate have only goblet cells markers but not higher than most of the other clusters
+```{r}
+levels(data_obj)
+head(Idents(data_obj))
+data_obj <- RenameIdents(data_obj,
+                                  "0" = "basal epidermis (tp63+)",
+                                  '1' = "myeloid cells",
+                                  '2' = "erythrocytes",
+                                  '3' = "RICs",
+                                  '4' = "basal epidermis (tp63+)",
+                                  '5' = "erythrocytes",
+                                  '6' = "RICs",
+                                  '7' = "RICs",
+                                  '8' = "basal epidermis (tp63+)",
+                                  '9' = "goblet cells",
+                                  '10' = "myeloid cells",
+                                  '11' = "ROCs",
+                                  '12' = "melanocytes precusors",
+                                  '13' = "notochord", #missing plod2.L
+                                  '14' = "basal epidermis (tp63+)", #or rics
+                                  '15' = "myeloid cells",
+                                  '16' = "muscle cells precusors", # not sure
+                                  '17' = "muscle cells",
+                                  '18' = "notochord",
+                                  '19' = "MCCs",
+                                  '20' = "muscle cells",
+                                  '21' = "ionocytes",
+                                  '22' = "erythrocytes", #based on clusters
+                                  '23' = "basal epidermis (tp63+)",
+                                  '24' = "myeloid cells",
+                                  '25' = "ROCs",
+                                  '26' = "SSCs",
+                                  '27' = "MCCs",
+                                  '28' = "muscle cells precusors", # or melanocyt prec
+                                  '29' = "goblet cells",
+                                  '30' = "MCCs",
+                                  '31' = "somites and others", #high percent expreseed fgfbp2.L and col9a1-b
+                                  '32' = "notochord",
+                                  '33' = "myeloid cells",
+                                  "34" = "neuronal cells",
+                                  "35" = "myeloid cells", #lef1.S expression
+                                  "36" = "erythrocytes")
+```
+```{r}
+
+levels(data_obj)
+# View the metadata
+
+cluster_labels_m <- levels(data_obj)
+
+# Generate a color palette with the same number of colors as there are clusters
+cluster_colors_m <- Polychrome::createPalette(length(cluster_labels_m), c("#ff0000", "#00ff00", "#0000ff"))
+
+# Assign each color to a cluster name
+names(cluster_colors_m) <- cluster_labels_m
+
+# Generate the UMAP plot with custom colors
+DimPlot(data_obj, reduction = "umap.unintegrated") +
+    scale_color_manual(values = cluster_colors_m) +
+    theme_minimal() +
+    ggtitle("UMAP")
+```

@@ -1,0 +1,117 @@
+---
+title: "Clustering refractory 12"
+author: "Ladislav Buček"
+date: "12/11/2024"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Libraries
+```{r library}
+options(java.parameters = "-Xmx30000m")
+set.seed(100)
+required_Packages_Install <- c("dplyr", "patchwork", "Seurat","ggplot2")
+for(Package in required_Packages_Install){
+  if(!require(Package,character.only = TRUE)) { 
+    install.packages(Package, dependencies=TRUE)
+  }
+  library(Package,character.only = TRUE)
+}
+```
+## Loading data
+I've renamed features.tsv to genes.tsv for Read10X() to work.
+```{r data loading}
+data_raw <- Read10X(data.dir = "/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/raw/filtered")
+```
+### QC
+
+```{r QC}
+data_obj  <- CreateSeuratObject(counts = data_raw, project = "ravi_0_hpa_B", min.cells = 3, min.features = 200)
+
+data_obj <- AddMetaData(object = data_obj, metadata = 12, col.name = "hpa")
+data_obj[["percent.mt"]] <- PercentageFeatureSet(data_obj, pattern = "^mt-")
+
+
+VlnPlot(data_obj, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+
+
+plot1 <- FeatureScatter(data_obj, feature1 = "nCount_RNA", feature2 = "percent.mt") +
+    scale_y_continuous(                  # Set y-axis range from 0 to 100%
+        breaks = seq(0, 100, by = 10),        # Major ticks every 10%
+        minor_breaks = seq(0, 100, by = 1)    # Minor ticks every 1%
+    )+
+    theme(
+        panel.grid.minor = element_line(color = "gray",  linewidth = 0.25)  # Display minor grid lines
+    )
+plot2 <- FeatureScatter(data_obj, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")+
+    scale_y_continuous(                  # Set y-axis range from 0 to 100%
+        breaks = seq(0, 15000, by = 1000),        # Major ticks every 10%
+        #minor_breaks = seq(0, 100, by = 1)    # Minor ticks every 1%
+    )+
+    theme(
+        panel.grid.minor = element_line(color = "gray",  linewidth = 0.25)  # Display minor grid lines
+    )
+plot1 + plot2
+data_obj <- subset(data_obj, subset = nFeature_RNA > 200 & nFeature_RNA < 10000 & percent.mt < 24)
+```
+## Normalization 
+Using log normalization.
+
+```{r norm}
+data_obj <- NormalizeData(data_obj, normalization.method = "LogNormalize", scale.factor = 10000)
+```
+
+## Feature selection 
+
+
+```{r feature selection}
+data_obj <- FindVariableFeatures(data_obj, selection.method = "vst", nfeatures = 2000)
+
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(data_obj), 10)
+
+# plot variable features with and without labels
+#plot1 <- VariableFeaturePlot(data_obj)
+#plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+#plot1 + plot2
+```
+
+## Data scaling 
+
+```{r data scaling}
+all.genes <- rownames(data_obj)
+data_obj <- ScaleData(data_obj, features = all.genes)
+#head(data_obj)
+```
+## PCA UMAP
+```{r PCA}
+data_obj <- RunPCA(data_obj)
+ElbowPlot(data_obj, ndims = 50)
+data_obj <- FindNeighbors(data_obj, dims = 1:30 , reduction = "pca")
+data_obj <- FindClusters(data_obj, resolution = 2, cluster.name = "unintegrated_clusters")
+data_obj <- RunUMAP(data_obj, dims = 1:30, reduction = "pca", reduction.name = "umap.unintegrated")
+
+cluster_labels_m <- levels(data_obj)
+
+cluster_colors_m <- Polychrome::createPalette(length(cluster_labels_m), c("#ff0000", "#00ff00", "#0000ff"))
+names(cluster_colors_m) <- cluster_labels_m
+
+DimPlot(data_obj, reduction = "umap.unintegrated" )+
+    scale_color_manual(values = cluster_colors_m) +
+    theme_minimal() +
+    ggtitle("UMAP")
+```
+## Markers 
+```{r}
+data_obj_markers <- FindAllMarkers(data_obj, only.pos = TRUE)
+```
+## Processed data saving 
+
+```{R data saving}
+saveRDS(data_obj, file = "/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/processed/data_obj_processed.rds")
+saveRDS(data_obj_markers, file = "/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/processed/data_obj_markers.rds")
+
+```
+
+
