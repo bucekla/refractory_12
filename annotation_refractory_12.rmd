@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r library}
 options(java.parameters = "-Xmx30000m")
 set.seed(100)
-required_Packages_Install <- c("dplyr", "patchwork", "Seurat","ggplot2","DT")
+required_Packages_Install <- c("dplyr", "patchwork", "Seurat","ggplot2","DT","UCell")
 for(Package in required_Packages_Install){
   if(!require(Package,character.only = TRUE)) { 
     install.packages(Package, dependencies=TRUE)
@@ -47,100 +47,100 @@ features_test_s4a <- c("tp63.L","tp63.S",            #basal epidermis
 from s20
 ```{r group markers}
 features_test <- list(
-"features_test_s20_basal" = c("htra4.L", "ctbs.S", "fgfbp2.S", "vit.L", "kera.S",
+basal_epidermis_tp63_pos = c("htra4.L", "ctbs.S", "fgfbp2.S", "vit.L", "kera.S",
                             "vit.S", "LOC108715242", "srpx.S", "lamb4.L",
                             "LOC108711240", "col6a1.S", "thdl20.L",
                             "LOC108706832", "LOC108701201", "npnt.S",
                             "XB956263.L", "sema3d.L", "rgs10.L",
                             "LOC108716056", "gpc1.S"),
-features_test_s20_erythro = c("alas2.S", "LOC108704227", "nt5dc4.L",
+erythrocytes = c("alas2.S", "LOC108704227", "nt5dc4.L",
                                "XB5727854.S", "rfesd.L", "erfe.L",
                                "LOC121393603", "LOC108704189", "rhd.S",
                                "MGC86526", "LOC121399868", "slc39a8.S",
                                "hba1.S", "LOC108712598", "LOC121397920",
                                "LOC121400387", "LOC108704049", "MGC69074",
                                "rhag.L", "LOC108703093"),
-features_test_s20_goblet = c("LOC108714003", "atp12a.S", "LOC108714002",
+goblet_cells = c("LOC108714003", "atp12a.S", "LOC108714002",
                               "rdh7.2.L", "LOC108703965", "LOC108718716",
                               "atp1b2.L", "scnn1g.S", "upk1b.S", "slc18a1.S",
                               "atp1b2.S", "cmahp.L", "epgn.S", "gjb1.L",
                               "LOC108708308", "cdo1.S", "atp13a-like.L",
                               "LOC108703949", "scnn1b.S", "gcm1.L"),
-features_test_s20_ionocy = c("atp6v1c2.L", "LOC108696914", "atp6ap1.1.L",
+ionocytes = c("atp6v1c2.L", "LOC108696914", "atp6ap1.1.L",
                               "atp6v0a4.L", "foxi1.S", "LOC108704370",
                               "atp6v1g3.S", "atp6v1g3.L", "ubp1.S", "ubp1.L",
                               "ca2.S", "LOC108695244", "tspan1.S", "atp6v0d2.L",
                               "atp6v1al.L", "tbc1d24.2.L", "atp6v1b1.L",
                               "LOC108703568", "LOC121401445", "LOC108711381"),
-features_test_s20_MCCs = c("LOC108714243", "odad3.S", "LOC121400779",
+MCCs = c("LOC108714243", "odad3.S", "LOC121400779",
                             "dzip1l.S", "LOC108698061", "dzip1l.L",
                             "LOC108713489", "trim26.L", "togaram2.S",
                             "LOC108716451", "LOC108711010", "cfap97d1.S",
                             "LOC108711781", "LOC108704815", "XB5922676.S",
                             "heatr4.S", "LOC108717135", "XB5857145.L",
                             "spaca9.L", "spats1.S"),
-features_test_s20_melano_prec = c("LOC108705433", "itga8.L", "clec3b.L",
+melanocytes_precursors = c("LOC108705433", "itga8.L", "clec3b.L",
                                    "wfdc1.L", "wif1.L", "cdh15.L", "palmd.L",
                                    "anos1.L", "angptl7.S", "crlf1.L",
                                    "LOC108717256", "cd248.L", "meox2.S",
                                    "wif1.S", "cthrc1.S", "tcf15.S", "tat.L",
                                    "LOC108701205", "angptl7.L", "qdpr.S"),
-features_test_s20_melano = c("ednrb2.L", "slc2a7.L", "slc2a9.L",
+melanocytes = c("ednrb2.L", "slc2a7.L", "slc2a9.L",
                               "LOC108701416", "LOC108708762", "ednrb2.S",
                               "LOC108712326", "rab38.S", "sox10.L", "sox10.S",
                               "LOC108710021", "rab38.L", "kcnj13.S",
                               "slc45a2.L", "LOC108706956", "pmel.L", "gng10.S",
                               "aoah.L", "pcdh10.L", "pax3.L"),
-features_test_s20_muscle_prec = c("foxi2.S", "chrd.1.L", "eya1.L", "ncam1.L",
+muscle_cells_precursors = c("foxi2.S", "chrd.1.L", "eya1.L", "ncam1.L",
                                    "six1.S", "LOC108707572", "foxc2.S",
                                    "LOC108708756", "meox2.L", "sfrp2.S",
                                    "ackr3.S", "LOC108718307", "LOC108716513",
                                    "cxcr4.S", "sfrp2.L", "gdf10.L", "svep1.L",
                                    "LOC108715742", "fgfrl1.L", "eya2.S"),
-features_test_s20_muscle = c("hhatl.S", "unc45b.S", "LOC108709709",
+muscle_cells = c("hhatl.S", "unc45b.S", "LOC108709709",
                               "tmem74b.S", "nrap.L", "sh3bgr.S", "mypn.L",
                               "XB5772073.S", "dhrs7c.S", "XB5726496.S",
                               "mlip.L", "LOC108709492", "klhl40.S", "myom1.S",
                               "myot.L", "LOC108707278", "LOC108714640",
                               "mypn.S", "macrod1.L", "LOC108704424"),
-features_test_s20_myeloid = c("LOC108713911", "rab44.L", "tyrobp.L",
+myeloid_cells = c("LOC108713911", "rab44.L", "tyrobp.L",
                                "il18rap.L", "ptprc.L", "LOC108715797",
                                "LOC495208", "lcp2.L", "LOC108711671", "plek.L",
                                "fli1b.S", "LOC108701729", "itgb2.L",
                                "LOC108703920", "myo1f.L", "myo1f.S",
                                "LOC121396959", "cst7.S", "LOC108706902",
                                "LOC108711670"),
-features_test_s20_neuronal = c("msi1.L", "prph.S", "gdap1l1.L", "hoxb9.S",
+neuronal_cells = c("msi1.L", "prph.S", "gdap1l1.L", "hoxb9.S",
                                 "cdh2.S", "tuba1a.S", "nova1.L", "prph.L",
                                 "fabp7.L", "nova1.S", "nkain4.S", "tubb2b.S",
                                 "dpysl2.L", "dpysl3.S", "LOC108699392",
                                 "LOC108705063", "dpysl3.L", "ncam1.S",
                                 "tubb2b.L"),
-features_test_s20_notochord = c("LOC108717871", "snorc.L", "crhr1.1.S",
+notochord = c("LOC108717871", "snorc.L", "crhr1.1.S",
                                  "LOC121394868", "LOC444433", "clec3a.L",
                                  "LOC108696917", "chad.L", "cnmd.S",
                                  "c3orf49.L", "LOC108708396", "matn3.S",
                                  "matn2.S", "bcan.S", "itgb8.S", "shh.S",
                                  "eln1.L", "LOC108716950", "r3hdml.L",
                                  "LOC108699572"),
-features_test_s20_RICs = c("inhba.S", "mmp11.L", "lmcd1.L", "lamb3.S", "lep.L",
+RICs = c("inhba.S", "mmp11.L", "lmcd1.L", "lamb3.S", "lep.L",
                             "pmepa1.L", "LOC108715894", "palld.S", "lmcd1.S",
                             "runx1.L", "inhba.L", "LOC108700342", "bcl2l10.S",
                             "btbd11.S", "rasgef1b.L", "cda.L", "LOC108709238",
                             "mmp8.L", "mmp8.S", "jag1.L"),
-features_test_s20_ROCs = c("LOC108704954", "LOC108708721", "LOC108720086",
+ROCs = c("LOC108704954", "LOC108708721", "LOC108720086",
                             "pltp.L", "tinagl1.S", "frem3.L", "pltp.S",
                             "dlx6.S", "capn8.3.L", "LOC108718546", "cpa6.L",
                             "egfl6.L", "col14a1.S", "sema3e.L", "bmp2.S",
                             "cldn6.2.S", "megf6.S", "LOC108707243", "mmp3.L",
                             "bhlha9.S"),
-features_test_s20_somites = c("LOC108709739", "col4a2.S", "col4a2.L",
+somites_and_others = c("LOC108709739", "col4a2.S", "col4a2.L",
                                "col4a1.L", "olfml3.L", "ptx3.L",
                                "LOC108699211", "LOC108710901", "olfml3.S",
                                "ptx3.S", "ugdhl.L", "twist1.S", "LOC108714329",
                                "colec12.L", "pdgfra.L", "pdgfra.S", "twist1.L",
                                "pax9.L", "tmem119.L", "aoc3.L"),
-features_test_s20_SSCs = c("LOC121396556", "LOC108705874", "LOC101027296",
+SSCs = c("LOC121396556", "LOC108705874", "LOC101027296",
                             "pcsk1.S", "LOC108711607", "LOC108701136",
                             "LOC121393944", "spdef.S", "LOC108708799",
                             "LOC108709387", "ag1.L", "tecta.2.S", "plekhb2.L",
@@ -162,66 +162,139 @@ for (group in names(features_test)) {
       print(plot)
     }
 ```
+
+# UCell before annotation
+```{r Ucell plots before annotation, fig.height=6, fig.width = 10}
+data_obj <- AddModuleScore_UCell(data_obj, features = features_test)
+
+signature.names <- paste0(names(features_test), "_UCell")
+
+#for (group in names(features_test)) {
+#    markers <- features_test[[group]]
+#    data_obj[[paste0(group_name, "_combined")]] <- rowMeans(
+#        FetchData(data_obj, vars = markers),
+#        na.rm = TRUE
+#    )
+#}
+    # Create a list of the new combined feature names
+#combined_features <- paste0(names(features_test), "_combined")
+
+# Plot the combined UCell scores for each group
+for (signature.name in signature.names) {
+    plot <- VlnPlot(data_obj, features = signature.name, group.by = "seurat_clusters", pt.size = 0.5) +
+        ggtitle(paste("UCell Score for", gsub("_combined", "", signature.name))) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        theme(plot.title = element_text(size = 14, face = "bold"))
+    
+    print(plot)  # Print each plot
+}
+print("works")
+```
+
+## Problem with annotating cluster 31
+```{r, cluster 31}
+# Subset cells from cluster 31 based on metadata
+cluster_31_data <- subset(data_obj, subset = seurat_clusters == 31)
+
+
+# Filter for cluster 31 and extract the 'gene' column
+cluster31.markers <- FindMarkers(data_obj, ident.1 = 31)
+
+# Print the markers
+head(cluster31.markers)
+
+VlnPlot(cluster_31_data, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+
+
+plot1 <- FeatureScatter(cluster_31_data, feature1 = "nCount_RNA", feature2 = "percent.mt") +
+    scale_y_continuous(                  # Set y-axis range from 0 to 100%
+        breaks = seq(0, 100, by = 10),        # Major ticks every 10%
+        minor_breaks = seq(0, 100, by = 1)    # Minor ticks every 1%
+    )+
+    theme(
+        panel.grid.minor = element_line(color = "gray",  linewidth = 0.25)  # Display minor grid lines
+    )
+plot2 <- FeatureScatter(cluster_31_data, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")+
+    scale_y_continuous(                  # Set y-axis range from 0 to 100%
+        breaks = seq(0, 15000, by = 1000),        # Major ticks every 10%
+        #minor_breaks = seq(0, 100, by = 1)    # Minor ticks every 1%
+    )+
+    theme(
+        panel.grid.minor = element_line(color = "gray",  linewidth = 0.25)  # Display minor grid lines
+    )
+plot1 + plot2
+```
 # Cluster annotation
-Cluster that I was unable to annotate have only goblet cells markers but not higher than most of the other clusters
+Cluster 1 would be myeloid cells based on S4A but not based on S20 markers
+Cluster 16 are maybe melanocytes based on UCell 
+but also have low S20 marker expression of melanocytes precursors and muscle cell precursors (same as in melanocytes)
 ```{r}
 levels(data_obj)
 head(Idents(data_obj))
 data_obj <- RenameIdents(data_obj,
                                   "0" = "basal epidermis (tp63+)",
-                                  '1' = "myeloid cells",
+                                  '1' = "unnanotated 1",
                                   #no myeloid S20 marker
+                                  #based on S4 i would annotate as myeloid cells
                                   '2' = "erythrocytes",
                                   '3' = "RICs",
                                   '4' = "basal epidermis (tp63+)",
                                   '5' = "erythrocytes",
-                                  '6' = "RICs", #missing rics markers
-                                  #maybe basal idk
+                                  '6' = "basal epidermis (tp63+)", 
+                                  #changed from RICs to basal epidermis based on S20
+                                  #but still have lef1.S expression as RICS
                                   '7' = "RICs", #lower RICs marker exp
                                   '8' = "basal epidermis (tp63+)",
                                   '9' = "goblet cells",
                                   '10' = "myeloid cells",
-                                  '11' = "ROCs", #lower ROCs marker exp
+                                  '11' = "ROCs", 
+                                  #lower ROCs marker exp
                                   #but low basal too
                                   '12' = "somites and others",
                                   #changed to somites and others
                                   #from melano precursors
-                                  '13' = "notochord", #very low noto markers exp
-                                  '14' = "basal epidermis (tp63+)", #or rics
+                                  '13' = "notochord", 
+                                  #low noto markers exp
+                                  '14' = "basal epidermis (tp63+)", 
+                                  #or rics
                                   #based on S20 looks more like basal
                                   '15' = "myeloid cells",
-                                  '16' = "muscle cells precusors", # not sure
-                                  #very low marker exp smae as in melanocyt
+                                  '16' = "melanocytes", # not sure
+                                  #very low marker exp same as in melanocytes prec or muscle cell prec marker group from S20
                                   '17' = "muscle cells",
                                   '18' = "notochord",
                                   '19' = "MCCs",
                                   '20' = "muscle cells",
                                   '21' = "ionocytes",
-                                  '22' = "erythrocytes", #based on clusters
-                                  #low S20 erythro marker exp
-                                  '23' = "basal epidermis (tp63+)",
-                                  #low basal
+                                  '22' = "erythrocytes",
+                                  #but marker genes expression at low level
+                                  '23' = "goblet cells",
                                   #low goblet S20 markers exp
+                                  #maybe basal
                                   '24' = "myeloid cells",
-                                  #but low marker exp
+                                  #but low S20 marker exp
                                   '25' = "ROCs",
                                   '26' = "SSCs",
                                   '27' = "neuronal cells",
-                                  #changed from MCCs to neuronal
-                                  #but low neuro marker exp too
+                                  #changed from MCCs to neuronal based on S20
+                                  #but low neuro marker exp
+                                  #dont have sncb.L and elavl4.L expression in S4A
+                                  #also based on clustering seems like neuronal
                                   '28' = "melanocytes precusors",
-                                  #or melanocyt prec changed to melano but maybe somites??
                                   #also somites and others markers
                                   #maybe mixed cluster
                                   '29' = "goblet cells",
                                   '30' = "neuronal cells",
-                                  #changed from MCCs to neuronal
-                                  '31' = "somites and others",
-                                  #high percent expreseed fgfbp2.L and col9a1-b
+                                  #changed from MCCs to neuronal based on S20
+                                  #also based on clustering seems like neuronal
+                                  '31' = "unnanotated 2",
+                                  #high "percent expressed" fgfbp2.L and col9a1-b on dotpllot from S4A
+                                  #some erythro markers
                                   '32' = "notochord",
                                   '33' = "myeloid cells",
                                   #missing most of the S20 markers
-                                  "34" = "neuronal cells", #lower marker exp
+                                  "34" = "neuronal cells",
+                                  #lower S20 marker exp
                                   "35" = "myeloid cells",
                                   #lef1.S expression
                                   #also missing some S20 markers
@@ -231,7 +304,7 @@ data_obj <- RenameIdents(data_obj,
 ## Final annotation visualation
 melano precursors have somites and others markers expression
 RICs markers in MCCs??
-melanocytes precfursors do have higher muscle cell precorsors markers exp than muscle cells prec (definitely something wrong)
+melanocytes precfursors do have higher muscle cell precorsors markers exp than muscle cells prec 
 ```{r, echo=FALSE, fig.height=10, fig.width = 16.2}
 
 levels(data_obj)
@@ -250,6 +323,8 @@ DimPlot(data_obj, reduction = "umap.unintegrated") +
     scale_color_manual(values = cluster_colors_m) +
     theme_minimal() +
     ggtitle("UMAP")
+
+
 for (group in names(features_test)) {
       markers <- features_test[[group]]
       plot <- DotPlot(data_obj, features = markers) + 
@@ -259,4 +334,5 @@ for (group in names(features_test)) {
       # Print each plot
       print(plot)
     }
+
 ```

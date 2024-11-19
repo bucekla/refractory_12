@@ -26,7 +26,7 @@ data_raw <- Read10X(data.dir = "/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/r
 ```
 ### QC
 
-```{r QC}
+```{r QC,fig.height=10, fig.width = 16.2}
 data_obj  <- CreateSeuratObject(counts = data_raw, project = "ravi_0_hpa_B", min.cells = 3, min.features = 200)
 
 data_obj <- AddMetaData(object = data_obj, metadata = 12, col.name = "hpa")
