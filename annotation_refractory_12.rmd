@@ -26,8 +26,10 @@ data_obj <- readRDS("/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/S
 data_obj_markers <- readRDS("/Users/ladislavbucek/Desktop/UK/Mgr./labgenexp/refractory/STAR/refractory-12-hpaSolo.out/data/processed/data_obj_markers.rds")
 datatable(data_obj_markers %>% group_by(cluster) %>% top_n(n = 30, wt = avg_log2FC))
 ```
+## Markers
+from S4(A)
 ```{r canonical markers}
-features_test <- c("tp63.L","tp63.S",            #basal epidermis
+features_test_s4a <- c("tp63.L","tp63.S",            #basal epidermis
                     "fgfbp2.L","nptx1.L",        #epidermis
                     "epor.L","hba1.S",           #erythrocytes
                     "itln1.L","anxa9.L",         #goblet cells
@@ -42,8 +44,123 @@ features_test <- c("tp63.L","tp63.S",            #basal epidermis
                     "foxa1.L","kcna4.S"          #SSCs
                    )
 ```
+from s20
+```{r group markers}
+features_test <- list(
+"features_test_s20_basal" = c("htra4.L", "ctbs.S", "fgfbp2.S", "vit.L", "kera.S",
+                            "vit.S", "LOC108715242", "srpx.S", "lamb4.L",
+                            "LOC108711240", "col6a1.S", "thdl20.L",
+                            "LOC108706832", "LOC108701201", "npnt.S",
+                            "XB956263.L", "sema3d.L", "rgs10.L",
+                            "LOC108716056", "gpc1.S"),
+features_test_s20_erythro = c("alas2.S", "LOC108704227", "nt5dc4.L",
+                               "XB5727854.S", "rfesd.L", "erfe.L",
+                               "LOC121393603", "LOC108704189", "rhd.S",
+                               "MGC86526", "LOC121399868", "slc39a8.S",
+                               "hba1.S", "LOC108712598", "LOC121397920",
+                               "LOC121400387", "LOC108704049", "MGC69074",
+                               "rhag.L", "LOC108703093"),
+features_test_s20_goblet = c("LOC108714003", "atp12a.S", "LOC108714002",
+                              "rdh7.2.L", "LOC108703965", "LOC108718716",
+                              "atp1b2.L", "scnn1g.S", "upk1b.S", "slc18a1.S",
+                              "atp1b2.S", "cmahp.L", "epgn.S", "gjb1.L",
+                              "LOC108708308", "cdo1.S", "atp13a-like.L",
+                              "LOC108703949", "scnn1b.S", "gcm1.L"),
+features_test_s20_ionocy = c("atp6v1c2.L", "LOC108696914", "atp6ap1.1.L",
+                              "atp6v0a4.L", "foxi1.S", "LOC108704370",
+                              "atp6v1g3.S", "atp6v1g3.L", "ubp1.S", "ubp1.L",
+                              "ca2.S", "LOC108695244", "tspan1.S", "atp6v0d2.L",
+                              "atp6v1al.L", "tbc1d24.2.L", "atp6v1b1.L",
+                              "LOC108703568", "LOC121401445", "LOC108711381"),
+features_test_s20_MCCs = c("LOC108714243", "odad3.S", "LOC121400779",
+                            "dzip1l.S", "LOC108698061", "dzip1l.L",
+                            "LOC108713489", "trim26.L", "togaram2.S",
+                            "LOC108716451", "LOC108711010", "cfap97d1.S",
+                            "LOC108711781", "LOC108704815", "XB5922676.S",
+                            "heatr4.S", "LOC108717135", "XB5857145.L",
+                            "spaca9.L", "spats1.S"),
+features_test_s20_melano_prec = c("LOC108705433", "itga8.L", "clec3b.L",
+                                   "wfdc1.L", "wif1.L", "cdh15.L", "palmd.L",
+                                   "anos1.L", "angptl7.S", "crlf1.L",
+                                   "LOC108717256", "cd248.L", "meox2.S",
+                                   "wif1.S", "cthrc1.S", "tcf15.S", "tat.L",
+                                   "LOC108701205", "angptl7.L", "qdpr.S"),
+features_test_s20_melano = c("ednrb2.L", "slc2a7.L", "slc2a9.L",
+                              "LOC108701416", "LOC108708762", "ednrb2.S",
+                              "LOC108712326", "rab38.S", "sox10.L", "sox10.S",
+                              "LOC108710021", "rab38.L", "kcnj13.S",
+                              "slc45a2.L", "LOC108706956", "pmel.L", "gng10.S",
+                              "aoah.L", "pcdh10.L", "pax3.L"),
+features_test_s20_muscle_prec = c("foxi2.S", "chrd.1.L", "eya1.L", "ncam1.L",
+                                   "six1.S", "LOC108707572", "foxc2.S",
+                                   "LOC108708756", "meox2.L", "sfrp2.S",
+                                   "ackr3.S", "LOC108718307", "LOC108716513",
+                                   "cxcr4.S", "sfrp2.L", "gdf10.L", "svep1.L",
+                                   "LOC108715742", "fgfrl1.L", "eya2.S"),
+features_test_s20_muscle = c("hhatl.S", "unc45b.S", "LOC108709709",
+                              "tmem74b.S", "nrap.L", "sh3bgr.S", "mypn.L",
+                              "XB5772073.S", "dhrs7c.S", "XB5726496.S",
+                              "mlip.L", "LOC108709492", "klhl40.S", "myom1.S",
+                              "myot.L", "LOC108707278", "LOC108714640",
+                              "mypn.S", "macrod1.L", "LOC108704424"),
+features_test_s20_myeloid = c("LOC108713911", "rab44.L", "tyrobp.L",
+                               "il18rap.L", "ptprc.L", "LOC108715797",
+                               "LOC495208", "lcp2.L", "LOC108711671", "plek.L",
+                               "fli1b.S", "LOC108701729", "itgb2.L",
+                               "LOC108703920", "myo1f.L", "myo1f.S",
+                               "LOC121396959", "cst7.S", "LOC108706902",
+                               "LOC108711670"),
+features_test_s20_neuronal = c("msi1.L", "prph.S", "gdap1l1.L", "hoxb9.S",
+                                "cdh2.S", "tuba1a.S", "nova1.L", "prph.L",
+                                "fabp7.L", "nova1.S", "nkain4.S", "tubb2b.S",
+                                "dpysl2.L", "dpysl3.S", "LOC108699392",
+                                "LOC108705063", "dpysl3.L", "ncam1.S",
+                                "tubb2b.L"),
+features_test_s20_notochord = c("LOC108717871", "snorc.L", "crhr1.1.S",
+                                 "LOC121394868", "LOC444433", "clec3a.L",
+                                 "LOC108696917", "chad.L", "cnmd.S",
+                                 "c3orf49.L", "LOC108708396", "matn3.S",
+                                 "matn2.S", "bcan.S", "itgb8.S", "shh.S",
+                                 "eln1.L", "LOC108716950", "r3hdml.L",
+                                 "LOC108699572"),
+features_test_s20_RICs = c("inhba.S", "mmp11.L", "lmcd1.L", "lamb3.S", "lep.L",
+                            "pmepa1.L", "LOC108715894", "palld.S", "lmcd1.S",
+                            "runx1.L", "inhba.L", "LOC108700342", "bcl2l10.S",
+                            "btbd11.S", "rasgef1b.L", "cda.L", "LOC108709238",
+                            "mmp8.L", "mmp8.S", "jag1.L"),
+features_test_s20_ROCs = c("LOC108704954", "LOC108708721", "LOC108720086",
+                            "pltp.L", "tinagl1.S", "frem3.L", "pltp.S",
+                            "dlx6.S", "capn8.3.L", "LOC108718546", "cpa6.L",
+                            "egfl6.L", "col14a1.S", "sema3e.L", "bmp2.S",
+                            "cldn6.2.S", "megf6.S", "LOC108707243", "mmp3.L",
+                            "bhlha9.S"),
+features_test_s20_somites = c("LOC108709739", "col4a2.S", "col4a2.L",
+                               "col4a1.L", "olfml3.L", "ptx3.L",
+                               "LOC108699211", "LOC108710901", "olfml3.S",
+                               "ptx3.S", "ugdhl.L", "twist1.S", "LOC108714329",
+                               "colec12.L", "pdgfra.L", "pdgfra.S", "twist1.L",
+                               "pax9.L", "tmem119.L", "aoc3.L"),
+features_test_s20_SSCs = c("LOC121396556", "LOC108705874", "LOC101027296",
+                            "pcsk1.S", "LOC108711607", "LOC108701136",
+                            "LOC121393944", "spdef.S", "LOC108708799",
+                            "LOC108709387", "ag1.L", "tecta.2.S", "plekhb2.L",
+                            "ano1.L", "LOC108711604", "pcdh20.S", "MGC83376",
+                            "kcna4.S", "plcb4.L", "LOC108713813")
+)
+```
 ```{r dotplot, echo=FALSE, fig.height=10, fig.width = 16.2}
-DotPlot(data_obj, features = features_test) + theme(axis.text.x=element_text(angle=90, hjust = 1, vjust = 0.5))
+DotPlot(data_obj, features = features_test_s4a) + theme(axis.text.x=element_text(angle=90, hjust = 1, vjust = 0.5))
+
+# dotplot for every cell type markers from S20
+for (group in names(features_test)) {
+      markers <- features_test[[group]]
+      plot <- DotPlot(data_obj, features = markers) + 
+        ggtitle(paste("DotPlot for", group)) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      
+      # Print each plot
+      print(plot)
+    }
 ```
 # Cluster annotation
 Cluster that I was unable to annotate have only goblet cells markers but not higher than most of the other clusters
@@ -78,16 +195,17 @@ data_obj <- RenameIdents(data_obj,
                                   '24' = "myeloid cells",
                                   '25' = "ROCs",
                                   '26' = "SSCs",
-                                  '27' = "MCCs",
-                                  '28' = "muscle cells precusors", # or melanocyt prec
+                                  '27' = "MCCs", #wrong
+                                  '28' = "melanocytes precusors", # or melanocyt prec changed to melano but maybe somites??
                                   '29' = "goblet cells",
-                                  '30' = "MCCs",
+                                  '30' = "MCCs", #wrong
                                   '31' = "somites and others", #high percent expreseed fgfbp2.L and col9a1-b
                                   '32' = "notochord",
                                   '33' = "myeloid cells",
                                   "34" = "neuronal cells",
                                   "35" = "myeloid cells", #lef1.S expression
                                   "36" = "erythrocytes")
+#no melanocytes foound
 ```
 ```{r}
 
