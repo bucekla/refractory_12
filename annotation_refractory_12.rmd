@@ -170,44 +170,69 @@ head(Idents(data_obj))
 data_obj <- RenameIdents(data_obj,
                                   "0" = "basal epidermis (tp63+)",
                                   '1' = "myeloid cells",
+                                  #no myeloid S20 marker
                                   '2' = "erythrocytes",
                                   '3' = "RICs",
                                   '4' = "basal epidermis (tp63+)",
                                   '5' = "erythrocytes",
-                                  '6' = "RICs",
-                                  '7' = "RICs",
+                                  '6' = "RICs", #missing rics markers
+                                  #maybe basal idk
+                                  '7' = "RICs", #lower RICs marker exp
                                   '8' = "basal epidermis (tp63+)",
                                   '9' = "goblet cells",
                                   '10' = "myeloid cells",
-                                  '11' = "ROCs",
-                                  '12' = "melanocytes precusors",
-                                  '13' = "notochord", #missing plod2.L
+                                  '11' = "ROCs", #lower ROCs marker exp
+                                  #but low basal too
+                                  '12' = "somites and others",
+                                  #changed to somites and others
+                                  #from melano precursors
+                                  '13' = "notochord", #very low noto markers exp
                                   '14' = "basal epidermis (tp63+)", #or rics
+                                  #based on S20 looks more like basal
                                   '15' = "myeloid cells",
                                   '16' = "muscle cells precusors", # not sure
+                                  #very low marker exp smae as in melanocyt
                                   '17' = "muscle cells",
                                   '18' = "notochord",
                                   '19' = "MCCs",
                                   '20' = "muscle cells",
                                   '21' = "ionocytes",
                                   '22' = "erythrocytes", #based on clusters
+                                  #low S20 erythro marker exp
                                   '23' = "basal epidermis (tp63+)",
+                                  #low basal
+                                  #low goblet S20 markers exp
                                   '24' = "myeloid cells",
+                                  #but low marker exp
                                   '25' = "ROCs",
                                   '26' = "SSCs",
-                                  '27' = "MCCs", #wrong
-                                  '28' = "melanocytes precusors", # or melanocyt prec changed to melano but maybe somites??
+                                  '27' = "neuronal cells",
+                                  #changed from MCCs to neuronal
+                                  #but low neuro marker exp too
+                                  '28' = "melanocytes precusors",
+                                  #or melanocyt prec changed to melano but maybe somites??
+                                  #also somites and others markers
+                                  #maybe mixed cluster
                                   '29' = "goblet cells",
-                                  '30' = "MCCs", #wrong
-                                  '31' = "somites and others", #high percent expreseed fgfbp2.L and col9a1-b
+                                  '30' = "neuronal cells",
+                                  #changed from MCCs to neuronal
+                                  '31' = "somites and others",
+                                  #high percent expreseed fgfbp2.L and col9a1-b
                                   '32' = "notochord",
                                   '33' = "myeloid cells",
-                                  "34" = "neuronal cells",
-                                  "35" = "myeloid cells", #lef1.S expression
+                                  #missing most of the S20 markers
+                                  "34" = "neuronal cells", #lower marker exp
+                                  "35" = "myeloid cells",
+                                  #lef1.S expression
+                                  #also missing some S20 markers
                                   "36" = "erythrocytes")
-#no melanocytes foound
+#no melanocytes found
 ```
-```{r}
+## Final annotation visualation
+melano precursors have somites and others markers expression
+RICs markers in MCCs??
+melanocytes precfursors do have higher muscle cell precorsors markers exp than muscle cells prec (definitely something wrong)
+```{r, echo=FALSE, fig.height=10, fig.width = 16.2}
 
 levels(data_obj)
 # View the metadata
@@ -225,4 +250,13 @@ DimPlot(data_obj, reduction = "umap.unintegrated") +
     scale_color_manual(values = cluster_colors_m) +
     theme_minimal() +
     ggtitle("UMAP")
+for (group in names(features_test)) {
+      markers <- features_test[[group]]
+      plot <- DotPlot(data_obj, features = markers) + 
+        ggtitle(paste("DotPlot for", group)) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      
+      # Print each plot
+      print(plot)
+    }
 ```
