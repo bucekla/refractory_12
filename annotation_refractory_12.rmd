@@ -152,15 +152,31 @@ SSCs = c("LOC121396556", "LOC108705874", "LOC101027296",
 DotPlot(data_obj, features = features_test_s4a) + theme(axis.text.x=element_text(angle=90, hjust = 1, vjust = 0.5))
 
 # dotplot for every cell type markers from S20
+
+# List to store all the plots
+plot_list <- list()
+
+# Generate and store the plots
 for (group in names(features_test)) {
-      markers <- features_test[[group]]
-      plot <- DotPlot(data_obj, features = markers) + 
-        ggtitle(paste("DotPlot for", group)) +
-        theme(axis.text.x = element_text(angle = 45, hjust = 1))
-      
-      # Print each plot
-      print(plot)
-    }
+  markers <- features_test[[group]]
+  plot <- DotPlot(data_obj, features = markers) + 
+    ggtitle(paste("DotPlot for", group)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  # Add plot to the list
+  plot_list[[group]] <- plot
+}
+
+# Arrange plots in a 1x2 grid
+for (i in seq(1, length(plot_list), by = 2)) {
+  p1 <- plot_list[[i]]
+  p2 <- if (i + 1 <= length(plot_list)) plot_list[[i + 1]] else NULL
+  
+  # Combine two plots side by side
+  combined <- p1 + (p2 | NULL)  # Safely handles odd numbers of plots
+  print(combined)
+}
+
 ```
 
 # UCell before annotation
